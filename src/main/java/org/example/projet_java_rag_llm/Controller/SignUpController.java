@@ -12,8 +12,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import org.example.projet_java_rag_llm.DBase.MongoDBConnection;
+import org.example.projet_java_rag_llm.DBase.MysqlConnection;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -74,7 +79,7 @@ public class SignUpController {
         }
 
         // Ajouter l'utilisateur à la base de données
-        MongoDBConnection.addUser(username, email, password);
+        MysqlConnection.addUser(username, email, password);
 
         // Afficher une alerte de succès
         showAlert("Inscription réussie", "Bienvenue " + username + ". Vous êtes maintenant inscrit.", AlertType.INFORMATION);
@@ -90,14 +95,6 @@ public class SignUpController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
-    }
-
-    // Méthode pour vérifier le format de l'email
-    private boolean isValidEmail(String email) {
-        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-        Pattern pattern = Pattern.compile(emailRegex);
-        Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
     }
 
     // Méthode pour effacer les champs du formulaire
@@ -117,5 +114,27 @@ public class SignUpController {
         Stage stage = (Stage) goToLoginButton.getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.setTitle("Créer un compte");
+    }
+    // Méthode pour vérifier le format de l'email
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
+    // Vérifier si l'email existe déjà dans la base de données (utilise la méthode checkUserCredentials de MysqlConnection)
+    private boolean isEmailInUse(String email) {
+        String query = "SELECT * FROM users WHERE email = ?";
+        try (Connection con = MysqlConnection.getConnection();
+             PreparedStatement pst = con.prepareStatement(query)) {
+            pst.setString(1, email);
+            try (ResultSet rst = pst.executeQuery()) {
+                return rst.next();  // Si un résultat est trouvé, l'email existe déjà
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

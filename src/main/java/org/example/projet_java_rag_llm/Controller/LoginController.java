@@ -50,6 +50,36 @@ public class LoginController {
         stage.setTitle("Créer un compte");
     }
 
+    public void handleLogin() throws IOException {
+        // Charger le fichier FXML pour SignUp
+
+        if(MysqlConnection.datafound(emailField.getText(), passwordField.getText())) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/projet_java_rag_llm/hello-view.fxml"));
+            Parent root = loader.load();
+            // Charger le fichier CSS
+            String css = getClass().getResource("/css/styles.css").toExternalForm();
+            root.getStylesheets().add(css);
+            // Créer une nouvelle scène et l'afficher
+            Stage stage = (Stage) loginButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Créer un compte");
+            // Assurez-vous de centrer la fenêtre
+            stage.centerOnScreen();
+
+            // Facultatif : Fixez des dimensions minimales pour éviter tout problème de redimensionnement
+            stage.setMinWidth(1000);
+            stage.setMinHeight(900);
+
+        }
+       else {
+            // Afficher une alerte de succès
+            showAlert("Alerte", "Pas d'utilisateur avec ces données. " , Alert.AlertType.ERROR);
+
+            // Effacer les champs du formulaire
+            clearFields();
+        }
+
+    }
 
     // Méthode pour afficher une alerte générique
     private void showAlert(String title, String message, Alert.AlertType type) {
@@ -59,37 +89,6 @@ public class LoginController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
-    public void handleLogin() throws IOException {
-        // Vérifier si l'utilisateur existe avec les identifiants fournis
-        if (MysqlConnection.checkUserCredentials(emailField.getText(), passwordField.getText())) {
-            // Si les identifiants sont corrects, charger la page principale
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/projet_java_rag_llm/hello-view.fxml"));
-            Parent root = loader.load();
-
-            // Charger le fichier CSS
-            String css = getClass().getResource("/css/styles.css").toExternalForm();
-            root.getStylesheets().add(css);
-
-            // Créer une nouvelle scène et l'afficher
-            Stage stage = (Stage) loginButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Page d'accueil");
-            stage.centerOnScreen();
-
-            // Fixer les dimensions minimales
-            stage.setMinWidth(1000);
-            stage.setMinHeight(900);
-
-        } else {
-            // Si l'utilisateur n'existe pas, afficher une alerte d'erreur
-            showAlert("Alerte", "Pas d'utilisateur avec ces données.", Alert.AlertType.ERROR);
-
-            // Effacer les champs du formulaire
-            clearFields();
-        }
-    }
-
 
     // Méthode pour effacer les champs du formulaire
     private void clearFields() {

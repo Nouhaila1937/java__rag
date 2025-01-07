@@ -80,34 +80,62 @@ public class MysqlConnection {
         }
     }
 
-    public static boolean checkUserCredentials(String email, String password) {
-        boolean userExists = false;
-        Connection con = getConnection();
-        PreparedStatement pst = null;
-        ResultSet rst = null;
+    // Méthode pour vérifier si l'utilisateur existe avec les identifiants
+    public static boolean datafound(String email, String password) {
+        // Connexion à la base de données
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
         try {
-            // Requête SQL pour vérifier si l'utilisateur avec cet email et mot de passe existe
-            String query = "SELECT * FROM users WHERE email = ? AND password = ?";
-            pst = con.prepareStatement(query);
-            pst.setString(1, email);  // Paramètre pour l'email
-            pst.setString(2, password);  // Paramètre pour le mot de passe
-            rst = pst.executeQuery();
+            // Connexion à la base de données
+            connection = getConnection();  // Assurez-vous que cette méthode récupère une connexion à votre DB
+            String query = "SELECT password FROM users WHERE email = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, email);  // Associer l'email à la requête préparée
 
-            if (rst.next()) {
-                userExists = true;  // Si un utilisateur est trouvé avec ces identifiants
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                // Récupérer le mot de passe haché depuis la base de données
+                String hashedPassword = resultSet.getString("password");
+
+                // Comparer le mot de passe fourni avec le mot de passe haché
+                return BCrypt.checkpw(password, hashedPassword);
             }
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            // Fermer les ressources
             try {
-                if (rst != null) rst.close();
-                if (pst != null) pst.close();
-                if (con != null) con.close();
-            } catch (SQLException e) {
+                if (resultSet != null) resultSet.close();
+                if (preparedStatement != null) preparedStatement.close();
+                if (connection != null) connection.close();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        return false;
+    }
+
+    // Méthode pour vérifier les identifiants de l'utilisateur avec un mot de passe haché
+    public static boolean checkUserCredentials(String email, String password) {
+        boolean userExists = false;
+        String query = "SELECT * FROM users WHERE email = ?";
+
+        try (PreparedStatement pst = con.prepareStatement(query)) {
+            pst.setString(1, email);
+            try (ResultSet rst = pst.executeQuery()) {
+                if (rst.next()) {
+                    String hashedPassword = rst.getString("password");
+                    if (BCrypt.checkpw(password, hashedPassword)) {
+                        userExists = true;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return userExists;
     }
