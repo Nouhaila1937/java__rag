@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
@@ -29,8 +30,7 @@ import javafx.stage.Stage;
 import org.bson.Document;
 import org.example.projet_java_rag_llm.DBase.MongoDBConnection;
 
-
-public class test {
+    public class test {
 
         @FXML
         private VBox rootPane;
@@ -53,7 +53,8 @@ public class test {
         @FXML
         private ListView<String> listView;
 
-        @FXML
+        private String connectedUsername;
+
         public void initialize() {
             System.out.println("Initialize called");
             rootPane = (VBox) rootPane;
@@ -63,21 +64,29 @@ public class test {
                 Stage stage = (Stage) rootPane.getScene().getWindow();
                 stage.centerOnScreen();
 
-                loadUserSessions();
+                loadUserSessions(); // Charger les sessions de l'utilisateur
+
+                // Ajout d'un écouteur pour la sélection d'une session
                 listView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
                     if (newValue != null) {
+                        // Afficher le titre de la session dans la console
+                        System.out.println("Session sélectionnée: " + newValue);
+
+                        // Charger les messages de la session sélectionnée
                         loadMessagesForSession(newValue);
+
+                        // Optionnellement, afficher un message par défaut ou d'accueil ici si nécessaire
+                        // addMessage("Bonjour", false); // Si tu veux un message d'accueil, laisse cette ligne.
                     }
                 });
             });
         }
 
         private void loadMessagesForSession(String sessionTitle) {
-            String username = "ajachi";
-
-            List<Document> userSessions = MongoDBConnection.getUserSessions(username);
+            List<Document> userSessions = MongoDBConnection.getUserSessions(connectedUsername);
             String sessionId = null;
 
+            // Trouver l'ID de la session sélectionnée
             for (Document session : userSessions) {
                 List<Document> sessionsArray = (List<Document>) session.get("sessions", List.class);
                 if (sessionsArray != null && !sessionsArray.isEmpty()) {
@@ -96,34 +105,45 @@ public class test {
                 return;
             }
 
+            // Récupérer les messages associés à cette session
             List<Document> messages = MongoDBConnection.getSessionMessages(sessionId);
 
+            System.out.println("Messages récupérés pour la session " + sessionTitle + ": " + messages);
+
+            // Effacer les anciens messages de l'interface
             messageContainer.getChildren().clear();
 
+            // Ajouter chaque message à l'interface
             for (Document messageDoc : messages) {
                 String sender = messageDoc.getString("sender");
                 String content = messageDoc.getString("content");
 
-                boolean isUser = sender.equals(username);
-                addMessage(content, isUser);
+                // Afficher le message dans la console
+                System.out.println("Message de " + sender + ": " + content);
+
+                // Afficher le message dans l'interface à droite (pour l'utilisateur) ou à gauche (pour le chatbot)
+                boolean isUser = sender.equals(connectedUsername);
+                addMessage(content, !isUser); // Inversez les booléens pour afficher à droite pour l'utilisateur et à gauche pour le chatbot
             }
 
+            // Faire défiler automatiquement vers le bas après le chargement
             Platform.runLater(() -> messageScrollPane.setVvalue(1.0));
         }
 
         public void loadUserSessions() {
-            String username = "ajachi";
-            boolean userExists = MongoDBConnection.userExists(username);
+            connectedUsername = "update" ;
+
+            boolean userExists = MongoDBConnection.userExists(connectedUsername);
             System.out.println("Utilisateur trouvé : " + (userExists ? "Oui" : "Non"));
 
             if (!userExists) {
                 return;
             }
 
-            List<Document> sessions = MongoDBConnection.getUserSessions(username);
+            List<Document> sessions = MongoDBConnection.getUserSessions(connectedUsername);
 
             if (sessions == null || sessions.isEmpty()) {
-                System.out.println("Aucune session trouvée pour l'utilisateur " + username);
+                System.out.println("Aucune session trouvée pour l'utilisateur " + connectedUsername);
                 return;
             }
 
@@ -142,7 +162,7 @@ public class test {
                 }
             }
 
-            System.out.println("Titres des sessions pour l'utilisateur " + username + ":");
+            System.out.println("Titres des sessions pour l'utilisateur " + connectedUsername + ":");
             for (String title : sessionTitles) {
                 System.out.println("- " + title);
             }
@@ -156,9 +176,8 @@ public class test {
         }
 
         public void startNewSession(ActionEvent actionEvent) {
-            String currentUsername = "ajachi";
             String newSessionTitle = "New Session Title";
-            MongoDBConnection.createNewSession(currentUsername, newSessionTitle);
+            MongoDBConnection.createNewSession(connectedUsername, newSessionTitle);
             loadUserSessions();
         }
 
@@ -180,18 +199,17 @@ public class test {
 
             Text text = new Text(message);
             text.setFill(Color.BLACK);
-            text.setWrappingWidth(450);
-
             text.setWrappingWidth(400);
 
             textFlow.getChildren().add(text);
 
             messageBox.getChildren().add(textFlow);
 
-            messageContainer.getChildren().add(messageBox);
-        }
+            // Affichage du message dans la console pour vérifier
+            System.out.println("Ajout du message: " + message);
 
-        public void sendMessage() {
+            messageContainer.getChildren().add(messageBox);
+        }    public void sendMessage() {
             String userMessage = messageInput.getText().trim();
             String botResponse = "";
             if (!userMessage.isEmpty()) {
@@ -224,23 +242,18 @@ public class test {
 
                 messageInput.clear();
 
-                messageScrollPane.setVvalue(1.0);
-
-                String currentUsername = "ajachi";
-
-                List<Document> userSessions = MongoDBConnection.getUserSessions(currentUsername);
+                List<Document> userSessions = MongoDBConnection.getUserSessions(connectedUsername);
 
                 String sessionId;
 
                 if (userSessions.isEmpty()) {
-                    sessionId = MongoDBConnection.createNewSession(currentUsername);
+                    sessionId = MongoDBConnection.createNewSession(connectedUsername);
                 } else {
                     sessionId = userSessions.get(0).getString("sessionId");
                 }
 
-                MongoDBConnection.addMessageToSession(currentUsername, sessionId, currentUsername, userMessage);
+                MongoDBConnection.addMessageToSession(connectedUsername, sessionId, connectedUsername, userMessage);
             }
         }
+
     }
-
-

@@ -31,6 +31,7 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import org.bson.Document;
 import org.example.projet_java_rag_llm.DBase.MongoDBConnection;
+import org.example.projet_java_rag_llm.DBase.MysqlConnection;
 
 public class HelloController {
 
@@ -123,11 +124,12 @@ public class HelloController {
     }*/
 
     private void loadMessagesForSession(String sessionTitle) {
-        String username = "ajachi"; // Remplacez par la méthode pour obtenir l'utilisateur connecté
+        String username = "a"; // Remplace par la méthode pour obtenir l'utilisateur connecté
 
-        // Obtenir l'ID ou les détails de la session à partir du titre
+        // Récupérer l'ID de la session à partir du titre
         List<Document> userSessions = MongoDBConnection.getUserSessions(username);
         String sessionId = null;
+        String sessionName = null; // Nouvelle variable pour stocker le nom de la session
 
         for (Document session : userSessions) {
             List<Document> sessionsArray = (List<Document>) session.get("sessions", List.class);
@@ -135,6 +137,7 @@ public class HelloController {
                 for (Document sessionDoc : sessionsArray) {
                     if (sessionDoc.getString("title").equals(sessionTitle)) {
                         sessionId = sessionDoc.getString("sessionId");
+                        sessionName = sessionDoc.getString("title"); // Récupérer le nom de la session
                         break;
                     }
                 }
@@ -146,6 +149,11 @@ public class HelloController {
             System.out.println("Aucune session trouvée pour le titre : " + sessionTitle);
             return;
         }
+
+        // Afficher le nom de la session
+        Text sessionNameText = new Text("Session: " + sessionName);
+        sessionNameText.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+        rootPane.getChildren().add(sessionNameText); // Ajouter le nom de la session dans le VBox principal
 
         // Récupérer les messages associés à cette session
         List<Document> messages = MongoDBConnection.getSessionMessages(sessionId);

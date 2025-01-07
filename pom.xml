@@ -60,6 +60,11 @@
             <version>0.4</version>
         </dependency>
 
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.26</version> <!-- Assurez-vous de choisir la bonne version -->
+        </dependency>
 
     </dependencies>
 

@@ -20,7 +20,7 @@
     <Button fx:id="newSessionButton" onAction="#startNewSession" prefWidth="150.0" text="New Session" />
 
     <!-- Boutons en haut -->
-    <Button fx:id="logoutButton" onAction="#handleLogout" prefWidth="100.0" text="Logout" />
+    <Button fx:id="logoutButton"  prefWidth="100.0" text="Logout" />
 
 
     <!-- HBox pour afficher l'historique à gauche et les messages à droite -->

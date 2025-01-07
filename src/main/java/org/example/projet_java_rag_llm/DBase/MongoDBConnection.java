@@ -175,11 +175,28 @@ public class MongoDBConnection {
         MongoCollection<Document> collection = database.getCollection("users");
 
         Document query = new Document("username", username);
-        Document updateOperation = new Document("$push", new Document("messages", message));
+
+        // Debug: Affiche la requête avant de la lancer
+        System.out.println("Requête MongoDB: " + query.toJson());
+
+        Document updateOperation = new Document("$push",
+                new Document("sessions.$[elem].messages",
+                        new Document("sender", username)
+                                .append("content", message)));
 
         try {
-            collection.updateOne(query, updateOperation);
-            System.out.println("Message ajouté avec succès : " + username);
+            // Debug: Affiche la mise à jour
+            System.out.println("Mise à jour MongoDB: " + updateOperation.toJson());
+
+            // Exécuter la mise à jour
+            UpdateResult result = collection.updateOne(query, updateOperation);
+
+            // Vérifier si le message a été ajouté
+            if (result.getMatchedCount() > 0) {
+                System.out.println("Message ajouté à la session de l'utilisateur : " + username);
+            } else {
+                System.out.println("Aucune session trouvée pour l'utilisateur : " + username);
+            }
         } catch (MongoException e) {
             System.out.println("Erreur lors de l'ajout du message : " + e.getMessage());
         }
@@ -238,7 +255,7 @@ public class MongoDBConnection {
         Document newMessage = new Document("sender", sender)
                 .append("content", content);
 
-        Document updateOperation = new Document("$push", new Document("sessions.$.messages", newMessage));
+        Document updateOperation = new Document("$push", new Document("sessions.$[elem].messages", newMessage));
 
         try {
             // Debug: Affiche la mise à jour

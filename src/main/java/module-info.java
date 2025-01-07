@@ -8,6 +8,7 @@ module org.example.projet_java_rag_llm {
     requires org.mongodb.bson;
     requires org.mongodb.driver.core;
     requires jbcrypt;
+    requires java.sql;
 
     opens org.example.projet_java_rag_llm to javafx.fxml;
     exports org.example.projet_java_rag_llm;
