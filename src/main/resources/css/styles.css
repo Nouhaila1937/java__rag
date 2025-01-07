@@ -1,0 +1,79 @@
+/* Appliquer un espacement et une police lisible */
+.text-area {
+    -fx-font-size: 20px;
+    -fx-font-family: "Arial";
+}
+
+button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-padding: 10 20;
+    -fx-font-size: 14px;
+    -fx-border-radius: 5px;
+}
+
+button:hover {
+    -fx-background-color: #45a049;
+}
+
+/* Zone de texte pour les messages */
+#messagesArea {
+    -fx-background-color: #f1f1f1;
+    -fx-border-radius: 10px;
+    -fx-padding: 10px;
+    -fx-opacity: 0.9;
+}
+
+/* Zone de texte pour la saisie de message */
+#inputArea {
+    -fx-background-color: #fff;
+    -fx-border-radius: 10px;
+    -fx-padding: 10px;
+    -fx-opacity: 0.9;
+}
+
+
+/* Style général pour la fenêtre */
+.root {
+    -fx-background-color: #f0f0f0;
+    -fx-font-family: Arial, sans-serif;
+    -fx-font-size: 14px;
+}
+
+/* Style pour la VBox */
+.vbox {
+    -fx-background-color: rgba(255, 255, 255, 0.8);
+    -fx-background-radius: 15;
+    -fx-padding: 20;
+    -fx-spacing: 20;
+    -fx-border-radius: 15;
+    -fx-border-color: #007bff;
+    -fx-border-width: 2;
+}
+
+/* Style pour les champs de texte */
+.text-field, .password-field {
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #007bff;
+    -fx-border-width: 2;
+    -fx-padding: 10px;
+    -fx-font-size: 14px;
+}
+
+/* Style pour le bouton d'inscription */
+.button {
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-font-weight: bold;
+}
+
+/* Style pour les labels */
+.label {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+}

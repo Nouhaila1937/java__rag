@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:id="rootPane"
+            fx:controller="org.example.projet_java_rag_llm.Controller.LoginController"
+            prefHeight="500.0" prefWidth="400.0">
+    <children>
+        <VBox alignment="CENTER" spacing="15.0"
+              layoutX="50.0" layoutY="50.0" prefWidth="300.0"
+              style="-fx-background-color: rgba(255, 255, 255, 0.85); -fx-background-radius: 15; -fx-padding: 20;">
+            <children>
+                <Label text="Connexion"
+                       style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #333333;" />
+
+                <TextField fx:id="emailField" promptText="Email"
+                           style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #007bff; -fx-border-width: 2; -fx-padding: 10px;" />
+
+                <PasswordField fx:id="passwordField" promptText="Mot de passe"
+                               style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #007bff; -fx-border-width: 2; -fx-padding: 10px;" />
+
+                <Button fx:id="loginButton" text="Se connecter" onAction="#handleLogin"
+                        style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-background-radius: 10; -fx-font-size: 14px; -fx-padding: 10px 20px;" />
+
+                <Button fx:id="goToSignUpButton" text="Pas encore inscrit ? Créez un compte."
+                        onAction="#handleGoToSignUp"
+                        style="-fx-background-color: transparent; -fx-text-fill: #007bff; -fx-font-size: 12px; -fx-underline: true;" />
+
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

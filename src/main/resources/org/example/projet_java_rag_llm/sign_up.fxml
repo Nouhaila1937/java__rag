@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.projet_java_rag_llm.Controller.SignUpController"
+            prefHeight="500.0" prefWidth="400.0"
+            style="-fx-background-image: url('/images/img.jpg'); -fx-background-size: cover;">
+    <children>
+        <VBox alignment="CENTER" spacing="20.0" layoutX="50.0" layoutY="50.0" prefWidth="300.0" style="-fx-background-color: rgba(255, 255, 255, 0.8); -fx-background-radius: 15; -fx-padding: 20;">
+            <children>
+                <!-- Titre -->
+                <Label text="Inscription"
+                       style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #333333;" />
+
+                <!-- Champ Nom d'utilisateur -->
+                <TextField fx:id="usernameField" promptText="Nom d'utilisateur"
+                           style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #007bff; -fx-border-width: 2; -fx-padding: 10px;" />
+
+                <!-- Champ Email -->
+                <TextField fx:id="emailField" promptText="Adresse Email"
+                           style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #007bff; -fx-border-width: 2; -fx-padding: 10px;" />
+
+                <!-- Champ Mot de Passe -->
+                <PasswordField fx:id="passwordField" promptText="Mot de passe"
+                               style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #007bff; -fx-border-width: 2; -fx-padding: 10px;" />
+
+                <!-- Champ Confirmer Mot de Passe -->
+                <PasswordField fx:id="confirmPasswordField" promptText="Confirmer le mot de passe"
+                               style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #007bff; -fx-border-width: 2; -fx-padding: 10px;" />
+
+                <!-- Bouton S'inscrire -->
+                <Button fx:id="signUpButton" text="S'inscrire" onAction="#handleSignUp"
+                        style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-background-radius: 10; -fx-font-size: 14px; -fx-padding: 10px 20px;" />
+
+                <!-- Button pour passer au login -->
+                <Button fx:id="goToLoginButton" text="Tu as déjà un compte ?Connecte toi. "
+                        onAction="#handleGoToLogin"
+                        style="-fx-background-color: transparent; -fx-text-fill: #007bff; -fx-font-size: 12px; -fx-underline: true;" />
+
+
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
