@@ -86,35 +86,6 @@ public class MongoDBConnection {
         }
     }
 
-    // Méthode pour ajouter un utilisateur à la collection "users"
-    /*public static void addUser(String username, String email, String password) {
-        MongoCollection<Document> collection = database.getCollection("users");
-
-        // Créer un document représentant l'utilisateur
-        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-        Document newUser = new Document("username", username)
-                .append("email", email)
-                .append("password", hashedPassword); // Vous devriez sécuriser le mot de passe avant de l'insérer
-
-        // Insérer le document dans la collection
-        try {
-            collection.insertOne(newUser);
-            System.out.println("Utilisateur ajouté avec succès : " + username);
-
-            // Créer une session vide après l'ajout de l'utilisateur
-            String sessionId = createNewSession(username); // Crée une session pour l'utilisateur
-
-            // Débogage
-            if (sessionId != null) {
-                System.out.println("Session créée pour l'utilisateur " + username + " avec sessionId : " + sessionId);
-            } else {
-                System.out.println("Erreur lors de la création de la session pour l'utilisateur " + username);
-            }
-
-        } catch (MongoException e) {
-            System.out.println("Erreur lors de l'insertion de l'utilisateur : " + e.getMessage());
-        }
-    }*/
 
     // Exemple d'ajout d'un utilisateur et création de session avec titre
     public static void addUser(String username, String email, String password) {

@@ -9,6 +9,7 @@ module org.example.projet_java_rag_llm {
     requires org.mongodb.driver.core;
     requires jbcrypt;
     requires java.sql;
+    requires com.google.protobuf;
 
     opens org.example.projet_java_rag_llm to javafx.fxml;
     exports org.example.projet_java_rag_llm;

@@ -1,7 +1,9 @@
-package org.example.projet_java_rag_llm.DBase;
+package org.example.projet_java_rag_llm.Dao;
 import org.mindrot.jbcrypt.BCrypt;
-import javax.swing.*;
+
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MysqlConnection {
 
@@ -28,6 +30,23 @@ public class MysqlConnection {
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
+
+    private int getUserIdByUsername(String username) {
+        String query = "SELECT id FROM users WHERE username = ?";
+        try (Connection con = MysqlConnection.getConnection();
+             PreparedStatement pst = con.prepareStatement(query)) {
+
+            pst.setString(1, username);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
     // Méthode pour ajouter un utilisateur avec mot de passe haché
     public static boolean addUser(String username, String email, String password) {
         String query = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
@@ -48,6 +67,25 @@ public class MysqlConnection {
         }
         return false;
     }
+
+    public static int getSessionIdByTitle(String title) {
+        String query = "SELECT id FROM sessions WHERE title = ?";
+        try (Connection con = getConnection();
+             PreparedStatement pst = con.prepareStatement(query)) {
+
+            pst.setString(1, title);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("id");  // Retourne l'ID de la session
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // Retourne -1 si la session n'est pas trouvée
+    }
+
+
 
 
     // Exemple de méthode pour récupérer des données
@@ -138,6 +176,103 @@ public class MysqlConnection {
             e.printStackTrace();
         }
         return userExists;
+    }
+
+    public static int createSession(int userId, String title) {
+        String query = "INSERT INTO sessions (user_id, title) VALUES (?, ?)";
+        try (Connection con = getConnection();
+             PreparedStatement pst = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+
+            pst.setInt(1, userId);
+            pst.setString(2, title);
+
+            int rowsAffected = pst.executeUpdate();
+            if (rowsAffected > 0) {
+                try (ResultSet generatedKeys = pst.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getInt(1); // Retourne l'ID de la session créée
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // Retourne -1 si la session n'a pas pu être créée
+    }
+
+    public static boolean saveMessage(int sessionId, int senderId, String content) {
+        String query = "INSERT INTO messages (session_id, sender, content) VALUES (?, ?, ?)";
+        try (Connection con = getConnection();
+             PreparedStatement pst = con.prepareStatement(query)) {
+
+            pst.setInt(1, sessionId);
+            pst.setInt(2, senderId);
+            pst.setString(3, content);
+
+            int rowsAffected = pst.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static List<String> getMessagesBySessionId(int sessionId) {
+        List<String> messages = new ArrayList<>();
+        String query = "SELECT sender, content, timestamp FROM messages WHERE session_id = ? ORDER BY timestamp ASC";
+
+        try (Connection con = getConnection();
+             PreparedStatement pst = con.prepareStatement(query)) {
+
+            pst.setInt(1, sessionId);
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                String sender = rs.getString("sender");
+                String content = rs.getString("content");
+                String timestamp = rs.getString("timestamp");
+                messages.add("Sender: " + sender + " - " + content + " (at " + timestamp + ")");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return messages;
+    }
+
+    // Attribut pour stocker l'utilisateur connecté
+    private static String loggedInUsername;
+
+    // Méthode pour définir l'utilisateur connecté
+    public static boolean loginUser(String email, String password) {
+        String query = "SELECT username, password FROM users WHERE email = ?";
+        try (PreparedStatement pst = con.prepareStatement(query)) {
+            pst.setString(1, email);
+
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    String hashedPassword = rs.getString("password");
+                    if (BCrypt.checkpw(password, hashedPassword)) {
+                        loggedInUsername = rs.getString("username");
+                        System.out.println("Connexion réussie. Utilisateur connecté : " + loggedInUsername);
+                        return true;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Échec de la connexion : email ou mot de passe incorrect.");
+        return false;
+    }
+    // Méthode pour récupérer le nom de l'utilisateur connecté
+    public static String getLoggedInUsername() {
+        if (loggedInUsername != null) {
+            System.out.println("Utilisateur actuellement connecté : " + loggedInUsername);
+        } else {
+            System.out.println("Aucun utilisateur n'est connecté.");
+        }
+        return loggedInUsername;
     }
 
 }

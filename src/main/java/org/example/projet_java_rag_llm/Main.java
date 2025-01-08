@@ -1,6 +1,6 @@
 package org.example.projet_java_rag_llm;
 
-import org.example.projet_java_rag_llm.DBase.MysqlConnection;
+import org.example.projet_java_rag_llm.Dao.MysqlConnection;
 
 public class Main {
 

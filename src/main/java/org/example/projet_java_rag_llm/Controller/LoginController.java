@@ -1,6 +1,5 @@
 package org.example.projet_java_rag_llm.Controller;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,7 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import org.example.projet_java_rag_llm.DBase.MysqlConnection;
+import org.example.projet_java_rag_llm.Dao.MysqlConnection;
 
 import java.io.IOException;
 
